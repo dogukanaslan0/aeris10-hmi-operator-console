@@ -1,0 +1,66 @@
+[project]
+name = "aeris-bridge"
+version = "0.1.0"
+description = "AERIS-10 RADAR — FastAPI WebSocket bridge between the Python parser and the React HMI."
+readme = "aeris_bridge/README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "AERIS-10 Project" },
+]
+keywords = ["radar", "phased-array", "fastapi", "websocket", "hmi"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: FastAPI",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.32.0",
+    "pydantic>=2.9.0",
+    "websockets>=14.0",
+    # Serial port reading (used for the STM32 GPS USB-CDC channel).
+    "pyserial>=3.5",
+    # USB-2 FT2232H driver — used by the upstream PLFM_RADAR FT2232HConnection.
+    # FT601 (USB-3) requires the proprietary `ftd3xx` package; install it
+    # manually if your hardware uses the USB-3 path (not on PyPI).
+    "pyftdi>=0.55.0",
+    # Numeric work in the adapter (detection grid → target list).
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.7.0",
+    "mypy>=1.13",
+]
+
+[project.scripts]
+aeris-bridge = "aeris_bridge.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["aeris_bridge"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_ignores = false
