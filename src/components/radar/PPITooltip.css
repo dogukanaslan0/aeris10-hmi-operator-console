@@ -1,0 +1,101 @@
+/* ────────────────────────────────────────────────────────────────────────────
+ * PPITooltip
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.ppi-tooltip {
+  position: fixed;
+  z-index: 50;
+  min-width: 168px;
+  padding: 6px 8px 4px 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  pointer-events: none;
+  user-select: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  animation: ppi-tooltip-in 100ms var(--ease-out-quart);
+}
+
+@keyframes ppi-tooltip-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ppi-tooltip[data-tone='nominal']  { border-color: rgba(174, 180, 191, 0.45); }
+.ppi-tooltip[data-tone='caution']  { border-color: rgba(216, 165, 83, 0.45); }
+.ppi-tooltip[data-tone='warning']  { border-color: rgba(216, 165, 83, 0.55); }
+.ppi-tooltip[data-tone='critical'] { border-color: rgba(220, 79, 93, 0.6); }
+
+/* ── Head ───────────────────────────────────────────────────────────────── */
+
+.ppi-tooltip__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ppi-tooltip__id {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--accent-cyan);
+}
+
+.ppi-tooltip__class {
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  color: var(--text-secondary);
+}
+
+/* ── Grid of metrics ────────────────────────────────────────────────────── */
+
+.ppi-tooltip__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 8px;
+}
+
+.ppi-tooltip__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.ppi-tooltip__row-label {
+  font-family: var(--font-label);
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+}
+
+.ppi-tooltip__row-value {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+
+/* ── Foot — large threat callout ────────────────────────────────────────── */
+
+.ppi-tooltip__foot {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-subtle);
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-align: center;
+}
+
+.ppi-tooltip__foot[data-tone='nominal']  { color: var(--accent-green); }
+.ppi-tooltip__foot[data-tone='caution']  { color: var(--accent-amber); }
+.ppi-tooltip__foot[data-tone='warning']  { color: var(--accent-amber); }
+.ppi-tooltip__foot[data-tone='critical'] { color: var(--accent-red); }

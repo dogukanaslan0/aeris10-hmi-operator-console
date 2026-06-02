@@ -1,0 +1,19 @@
+/* ────────────────────────────────────────────────────────────────────────────
+ * Sparkline
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.aeris-sparkline {
+  display: block;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+/* Static red border on alert — no pulsing glow. The threshold-line + value
+ * text colour already signal the breach; doubling that with a flashing
+ * outline is the AI-template look we're avoiding. */
+.aeris-sparkline--alert {
+  border-color: var(--accent-red);
+}

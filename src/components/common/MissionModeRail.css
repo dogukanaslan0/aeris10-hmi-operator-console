@@ -1,0 +1,243 @@
+/* ────────────────────────────────────────────────────────────────────────────
+ * MissionModeRail — Frosted C2 Tactical Status Dashboard Overhaul (Tuned)
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.mission-rail {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 20;
+  display: flex;
+  align-items: stretch;
+  gap: 1px;
+  transform: translateX(-50%);
+  
+  /* Modern Glassmorphism & High-Tech Bezel Chrome */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(4, 7, 12, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-sm);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.75),
+    0 0 1px rgba(255, 255, 255, 0.15) inset;
+  font-family: var(--font-display);
+  pointer-events: auto; /* Allow hovering */
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.mission-rail:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 16px 44px rgba(0, 0, 0, 0.85),
+    0 0 1px rgba(255, 255, 255, 0.25) inset;
+}
+
+/* ── Glowing Operational Accent Bar ───────────────────────────────────────── */
+
+.mission-rail__accent-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transition: all var(--transition-base);
+  opacity: 0.85;
+}
+
+/* Cyan Glowing Accent for WATCH (Survey) Mode */
+.mission-rail[data-mode='watch'] .mission-rail__accent-bar {
+  background: #c7ccd4;
+  box-shadow: 0 1px 6px #c7ccd4, 0 2px 12px rgba(199, 204, 212, 0.5);
+}
+
+/* Pulsing Red Glowing Accent for ENGAGE (Threat) Mode */
+.mission-rail[data-mode='engagement'] .mission-rail__accent-bar {
+  background: #dc4f5d;
+  box-shadow: 0 1px 6px #dc4f5d, 0 2px 12px rgba(220, 79, 93, 0.5);
+  animation: accent-pulse 1.8s infinite ease-in-out;
+}
+
+/* Deep Violet/Purple Glowing Accent for DIAG (Health) Mode */
+.mission-rail[data-mode='diagnostic'] .mission-rail__accent-bar {
+  background: #8d93a1;
+  box-shadow: 0 1px 6px #8d93a1, 0 2px 12px rgba(141, 147, 161, 0.5);
+}
+
+@keyframes accent-pulse {
+  0%, 100% { opacity: 0.7; filter: brightness(0.9); }
+  50% { opacity: 1.0; filter: brightness(1.3); }
+}
+
+/* ── Panel Cards / Columns ────────────────────────────────────────────────── */
+
+.mission-rail__mode,
+.mission-rail__metric,
+.mission-rail__confidence {
+  min-height: 40px;
+  padding: 6px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.01);
+  transition: all var(--transition-fast);
+}
+
+/* Fine-drawn vertical dividers - omitted from the last column for perfect symmetry */
+.mission-rail__mode,
+.mission-rail__metric {
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Hover transitions on individual metrics to make it feel responsive & alive */
+.mission-rail__metric:hover {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.mission-rail__mode {
+  min-width: 96px;
+  background: transparent;
+  padding-left: 18px;
+  padding-top: 8px; /* Offset for top accent bar */
+}
+
+/* Mode-Specific Color Branding */
+.mission-rail[data-mode='engagement'] .mission-rail__label {
+  color: var(--accent-red);
+}
+
+.mission-rail[data-mode='diagnostic'] .mission-rail__label {
+  color: var(--accent-violet);
+}
+
+.mission-rail[data-mode='watch'] .mission-rail__label {
+  color: var(--accent-cyan);
+}
+
+.mission-rail__label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  line-height: 1.1;
+  transition: all var(--transition-base);
+}
+
+.mission-rail__posture,
+.mission-rail__metric-label,
+.mission-rail__confidence-label {
+  color: var(--text-tertiary);
+  font-family: var(--font-label);
+  font-size: 7.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ── Metric Cards ─────────────────────────────────────────────────────────── */
+
+.mission-rail__metric {
+  min-width: 72px;
+  padding-top: 8px; /* Offset for top accent bar */
+}
+
+.mission-rail__metric-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 2px;
+  line-height: 1;
+}
+
+.mission-rail__metric-value,
+.mission-rail__confidence-score {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+}
+
+/* ── Pulsing Tactical micro-LED Status Indicators ────────────────────────── */
+
+.mission-rail__led {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all var(--transition-base);
+}
+
+/* Flashing Red LED for active alarms or critical threat detections */
+.mission-rail__led--red-flash {
+  background: #dc4f5d;
+  box-shadow: 0 0 5px #dc4f5d, 0 0 10px rgba(220, 79, 93, 0.8);
+  animation: led-blink 0.8s infinite ease-in-out;
+}
+
+/* Steady Cyan LED for locked target telemetry selection */
+.mission-rail__led--cyan-steady {
+  background: #c7ccd4;
+  box-shadow: 0 0 5px #c7ccd4, 0 0 8px rgba(199, 204, 212, 0.6);
+}
+
+@keyframes led-blink {
+  0%, 100% { opacity: 0.3; transform: scale(0.9); }
+  50% { opacity: 1.0; transform: scale(1.1); }
+}
+
+/* Tone styling overrides for metrics values */
+.mission-rail__metric[data-tone='critical'] .mission-rail__metric-value {
+  color: var(--role-critical);
+}
+
+.mission-rail__metric[data-tone='info'] .mission-rail__metric-value {
+  color: var(--role-focus);
+}
+
+.mission-rail__metric[data-tone='dim'] .mission-rail__metric-value {
+  color: var(--text-dim);
+}
+
+/* ── Confidence Segment Card ────────────────────────────────────────────── */
+
+.mission-rail__confidence {
+  min-width: 96px;
+  padding-top: 8px; /* Offset for top accent bar */
+  padding-right: 18px;
+  border-right: none; /* Guaranteed zero right border for perfect symmetry */
+  position: relative;
+}
+
+.mission-rail__confidence[data-tone='nominal'] .mission-rail__confidence-score {
+  color: var(--role-nominal);
+}
+
+.mission-rail__confidence[data-tone='caution'] .mission-rail__confidence-score {
+  color: var(--role-caution);
+}
+
+.mission-rail__confidence[data-tone='critical'] .mission-rail__confidence-score {
+  color: var(--role-critical);
+}
+
+/* ── Responsive adjustments ───────────────────────────────────────────────── */
+
+@media (max-width: 920px) {
+  .mission-rail {
+    bottom: 12px;
+    max-width: calc(100% - 24px);
+  }
+
+  .mission-rail__mode,
+  .mission-rail__metric,
+  .mission-rail__confidence {
+    min-height: 38px;
+    padding: 5px 12px;
+  }
+
+  .mission-rail__metric {
+    min-width: 62px;
+  }
+}

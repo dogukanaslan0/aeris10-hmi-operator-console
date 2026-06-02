@@ -1,0 +1,51 @@
+/* ────────────────────────────────────────────────────────────────────────────
+ * StatusDot — themed status indicator.
+ * Pulse animation runs only when [data-pulse="true"]; otherwise the dot is
+ * static. Reduced-motion users see a permanent solid state.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.status-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  line-height: 1;
+}
+
+.status-dot__svg {
+  display: block;
+  overflow: visible;
+}
+
+/* Tone → currentColor (drives both halo + core) */
+.status-dot[data-tone='nominal']  { color: var(--accent-green); }
+.status-dot[data-tone='info']     { color: var(--accent-cyan); }
+.status-dot[data-tone='caution']  { color: var(--accent-amber); }
+.status-dot[data-tone='critical'] { color: var(--accent-red); }
+.status-dot[data-tone='violet']   { color: var(--accent-violet); }
+.status-dot[data-tone='dim']      { color: var(--text-dim); }
+
+/* Optional glow halo around the entire dot */
+.status-dot[data-glow='true']::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, currentColor 0%, transparent 60%);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* Pulse — static thin outline ring instead of animated expansion.
+ * Instrument terminals don't expand-fade their status dots; the dot's
+ * colour is the signal, motion is noise. */
+.status-dot[data-pulse='true']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: 0.4;
+  pointer-events: none;
+}

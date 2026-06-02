@@ -1,0 +1,222 @@
+/* ────────────────────────────────────────────────────────────────────────────
+ * PanelLayout — CSS-grid shell + placeholder treatment
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.aeris-layout {
+  display: grid;
+  grid-template-areas:
+    "topbar    topbar    topbar"
+    "left      center    right"
+    "statusbar statusbar statusbar";
+  grid-template-columns:
+    var(--layout-leftpanel-w)
+    minmax(0, 1fr)
+    var(--layout-rightpanel-w);
+  grid-template-rows:
+    var(--layout-topbar-h)
+    minmax(0, 1fr)
+    var(--layout-statusbar-h);
+
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  overflow: hidden;
+  transition: grid-template-columns 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Cells ───────────────────────────────────────────────────────────────── */
+
+.aeris-layout__topbar {
+  grid-area: topbar;
+  background: var(--bg-overlay);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  min-width: 0;
+  z-index: 10;
+}
+
+.aeris-layout__left {
+  grid-area: left;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: border-color var(--transition-base), background-color var(--transition-base),
+              opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aeris-layout__left:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.aeris-layout__center {
+  grid-area: center;
+  background: #020304;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+  /* Cinematic technical HUD grid lines behind canvas */
+  background-image: 
+   linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+   linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.aeris-layout__right {
+  grid-area: right;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-subtle);
+  overflow: hidden; /* Changed from overflow-y: auto to allow inner panels to handle scrolling */
+  display: flex;
+  flex-direction: column;
+  transition: border-color var(--transition-base), background-color var(--transition-base),
+              opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aeris-layout__right:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.aeris-layout__statusbar {
+  grid-area: statusbar;
+  background: var(--bg-overlay);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: 11px;
+  min-width: 0;
+  z-index: 10;
+}
+
+/* ── Scrollbars (subtle, in-theme) ───────────────────────────────────────── */
+
+.aeris-layout__left::-webkit-scrollbar,
+.aeris-layout__right::-webkit-scrollbar {
+  width: 4px;
+}
+
+.aeris-layout__left::-webkit-scrollbar-track,
+.aeris-layout__right::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.aeris-layout__left::-webkit-scrollbar-thumb,
+.aeris-layout__right::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.aeris-layout__left::-webkit-scrollbar-thumb:hover,
+.aeris-layout__right::-webkit-scrollbar-thumb:hover {
+  background: var(--border-active);
+}
+
+/* ── Placeholder treatment (used while sub-panels are pending) ───────────── */
+
+.aeris-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-family: var(--font-display);
+  color: var(--text-dim);
+  gap: var(--space-3);
+  user-select: none;
+  padding: var(--space-5);
+  text-align: center;
+}
+
+.aeris-placeholder__name {
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--text-secondary);
+}
+
+.aeris-placeholder__step {
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+  border: 1px solid var(--border-subtle);
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-sm);
+}
+
+/* ── Post-Boot Staggered Panel Fade-in ────────────────────────────────────── */
+
+.aeris-layout[data-booted="false"] .aeris-layout__topbar,
+.aeris-layout[data-booted="false"] .aeris-layout__statusbar,
+.aeris-layout[data-booted="false"] .aeris-layout__left,
+.aeris-layout[data-booted="false"] .aeris-layout__center,
+.aeris-layout[data-booted="false"] .aeris-layout__right {
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+}
+
+.aeris-layout[data-booted="true"] .aeris-layout__topbar {
+  animation: panel-fade-in 0.6s var(--ease-out-quart) forwards;
+  animation-delay: 0.1s;
+}
+
+.aeris-layout[data-booted="true"] .aeris-layout__statusbar {
+  animation: panel-fade-in 0.6s var(--ease-out-quart) forwards;
+  animation-delay: 0.2s;
+}
+
+.aeris-layout[data-booted="true"] .aeris-layout__center {
+  animation: panel-fade-in 0.8s var(--ease-out-quart) forwards;
+  animation-delay: 0.3s;
+}
+
+.aeris-layout[data-booted="true"] .aeris-layout__left {
+  animation: panel-fade-in 0.6s var(--ease-out-quart) forwards;
+  animation-delay: 0.4s;
+}
+
+.aeris-layout[data-booted="true"] .aeris-layout__right {
+  animation: panel-fade-in 0.6s var(--ease-out-quart) forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes panel-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Layout Presets ── */
+
+/* Watch Mode: Left and Right panels fully collapsed/hidden, center expands */
+.aeris-layout[data-layout="watch"] {
+  grid-template-columns: 0px minmax(0, 1fr) 0px;
+}
+.aeris-layout[data-layout="watch"] .aeris-layout__left,
+.aeris-layout[data-layout="watch"] .aeris-layout__right {
+  opacity: 0;
+  pointer-events: none;
+  border-width: 0px;
+  overflow: hidden;
+}
+
+/* Engagement Mode: Default balanced view */
+.aeris-layout[data-layout="engagement"] {
+  grid-template-columns: 286px minmax(0, 1fr) 360px;
+}
+
+/* Diagnostic Mode: Expanded right panel, condensed left panel */
+.aeris-layout[data-layout="diagnostic"] {
+  grid-template-columns: 220px minmax(0, 1fr) 480px;
+}

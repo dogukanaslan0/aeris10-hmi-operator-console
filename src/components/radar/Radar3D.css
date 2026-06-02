@@ -1,0 +1,324 @@
+/* ── 3D Radar Container ──────────────────────────────────────────────────── */
+
+.radar-3d-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #020304;
+  overflow: hidden;
+  user-select: none;
+}
+
+.radar-3d-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+}
+
+.radar-3d-canvas:active {
+  cursor: grabbing;
+}
+
+/* ── HUD 2D/3D Mode Selector Controls ────────────────────────────────────── */
+
+.radar-3d__controls {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  display: flex;
+  gap: var(--space-1);
+  background: rgba(0, 0, 0, 0.72);
+  padding: 2px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  z-index: 10;
+}
+
+.radar-3d__toggle-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 4px 10px;
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+}
+
+.radar-3d__toggle-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.radar-3d__toggle-btn--active {
+  color: #ffffff;
+  background: rgba(199, 204, 212, 0.12);
+  border-color: rgba(199, 204, 212, 0.3);
+}
+
+/* ── DOM Tactical Billboard Labels ───────────────────────────────────────── */
+
+.radar-3d-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.radar-3d-billboard {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: rgba(4, 7, 12, 0.95);
+  border: 1px solid var(--border-subtle);
+  /* Uniform billboard chrome — no coloured left rail */
+  border-radius: var(--radius-xs);
+  padding: 5px 8px;
+  min-width: 90px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.75);
+  transition: opacity 0.1s ease;
+}
+
+/* Threat reads from the TGT ID text colour only — billboard chrome stays
+ * uniform across all severities. No coloured left rail, no critical glow,
+ * no pulsing card. */
+.radar-3d-billboard--nominal  .r3d-b__id { color: var(--accent-green); }
+.radar-3d-billboard--caution  .r3d-b__id { color: var(--accent-amber); }
+.radar-3d-billboard--warning  .r3d-b__id { color: var(--accent-amber); }
+.radar-3d-billboard--critical .r3d-b__id { color: var(--accent-red); }
+
+@keyframes r3d-b-pulse {
+  0%, 100% { border-color: rgba(220, 79, 93, 0.3); }
+  50% { border-color: rgba(220, 79, 93, 0.65); }
+}
+
+.r3d-b__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: 3px;
+  width: 100%;
+}
+
+.r3d-b__id {
+  font-family: var(--font-display);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.r3d-b__type {
+  font-family: var(--font-label);
+  font-size: 6.5px;
+  color: var(--text-tertiary);
+  opacity: 0.85;
+}
+
+.r3d-b__metrics {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-label);
+  font-size: 7.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.r3d-b__vel {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.r3d-b__vel[data-tone='nominal']  { color: var(--accent-green); }
+.r3d-b__vel[data-tone='critical'] { color: var(--accent-red); }
+
+/* ── 3D Compass Labels ───────────────────────────────────────────────────── */
+
+.compass-3d-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 4;
+}
+
+.compass-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  font-weight: 800;
+  color: rgba(199, 204, 212, 0.35);
+  pointer-events: none;
+}
+
+.compass-label--N {
+  color: rgba(220, 79, 93, 0.55);
+}
+
+/* ── High-Tech Tactical HUD Overlay ─────────────────────────────────────── */
+
+.radar-3d-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-4);
+  z-index: 8;
+  font-family: var(--font-display);
+}
+
+.r3d-hud-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: 36px; /* offset top-left sections */
+}
+
+/* Right HUD column sits BELOW the 2D/3D toggle AND the RESET/AUTO cam
+ * controls stacked above it — otherwise BEAM AZ/EL/TRK overlapped both. */
+.r3d-hud-panel--right {
+  margin-top: 92px;
+}
+
+.r3d-hud-item {
+  background: rgba(4, 7, 12, 0.92);
+  border: 1px solid var(--border-subtle);
+  /* No coloured side rail — uniform HUD chrome */
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 100px;
+}
+
+.r3d-hud-panel--right .r3d-hud-item {
+  align-items: flex-end;
+}
+
+.r3d-hud-item__lbl {
+  font-size: 6.5px;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.r3d-hud-item__val {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.r3d-hud-panel--right .r3d-hud-item__val {
+  color: var(--accent-amber);
+}
+
+/* ── 3D Midpoint Kinematic Link Labels ───────────────────────────────────── */
+
+.radar-3d-link-billboard {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.r3d-link-label {
+  font-family: var(--font-label);
+  font-size: 7.5px;
+  font-weight: 600;
+  background: rgba(10, 8, 20, 0.92);
+  border: 1px solid rgba(141, 147, 161, 0.35);
+  color: var(--status-violet);
+  padding: 2px 5px;
+  border-radius: var(--radius-xs);
+  white-space: nowrap;
+}
+
+/* ── Vertical Altitude Scale Grid Labels ─────────────────────────────────── */
+
+.radar-3d-height-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-label);
+  font-size: 7px;
+  font-weight: 700;
+  color: rgba(199, 204, 212, 0.4);
+  pointer-events: none;
+  background: rgba(2, 3, 4, 0.85);
+  padding: 1px 3px;
+  border: 1px solid rgba(199, 204, 212, 0.15);
+  border-radius: var(--radius-xs);
+}
+
+/* ── Top-right Camera Controls (Reset + Auto-Rotate) ─────────────────────── */
+
+.radar-3d__cam-controls {
+  position: absolute;
+  /* Stacked directly below .radar-3d__controls (2D/3D toggle, top 16, h ~28).
+   * Same right offset keeps the two toolbars in a clean vertical column. */
+  top: 52px;
+  right: var(--space-4);
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+  font-family: var(--font-label);
+}
+
+.radar-3d__cam-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: rgba(8, 10, 16, 0.92);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.radar-3d__cam-btn:hover {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan-25);
+  background: rgba(199, 204, 212, 0.08);
+  transform: translateY(-1px);
+}
+
+.radar-3d__cam-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.radar-3d__cam-btn[data-active] {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  background: rgba(199, 204, 212, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-3d__cam-btn,
+  .radar-3d__cam-btn:hover,
+  .radar-3d__cam-btn:active { transform: none; }
+}

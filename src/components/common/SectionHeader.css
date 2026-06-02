@@ -1,0 +1,85 @@
+/* ────────────────────────────────────────────────────────────────────────────
+ * SectionHeader — index · icon · label · rule · trailing
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.section-header {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 0 6px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-label);
+  user-select: none;
+}
+
+.section-header__index {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  /* Signature: a zero-padded technical *designation*, not a boxed chip. A
+   * single hairline tick separates it from the label — like a part number on
+   * an engineering drawing. Tone reads from the numeral colour alone. */
+  padding: 0 var(--space-2) 0 1px;
+  border-right: 1px solid var(--border-subtle);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--transition-fast);
+}
+
+.section-header__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.section-header__label {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.section-header__rule {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--border-subtle) 0%,
+    transparent 100%
+  );
+  min-width: 24px;
+}
+
+.section-header__trailing {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ── Tone modifiers ────────────────────────────────────────────────────── */
+
+/* Severity reads from the numeral + icon COLOUR only — no tinted border. */
+.section-header[data-tone='nominal']  .section-header__index,
+.section-header[data-tone='nominal']  .section-header__icon { color: var(--accent-green); }
+.section-header[data-tone='info']     .section-header__index,
+.section-header[data-tone='info']     .section-header__icon { color: var(--accent-cyan); }
+.section-header[data-tone='caution']  .section-header__index,
+.section-header[data-tone='caution']  .section-header__icon { color: var(--accent-amber); }
+.section-header[data-tone='critical'] .section-header__index,
+.section-header[data-tone='critical'] .section-header__icon { color: var(--accent-red); }
+.section-header[data-tone='violet']   .section-header__index,
+.section-header[data-tone='violet']   .section-header__icon { color: var(--accent-violet); }

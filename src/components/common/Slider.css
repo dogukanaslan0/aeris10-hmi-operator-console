@@ -1,0 +1,359 @@
+/* ────────────────────────────────────────────────────────────────────────────
+ * Slider — Ghost Protocol
+ *
+ * The visual track lives in a sibling `.aeris-slider__track` so we can apply
+ * a gradient stop at `var(--slider-pct)`. The native input still sits on top
+ * (z-index 2, full width) — clicks/drags pass through to it, but every pixel
+ * the operator sees is ours.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.aeris-slider {
+  /* CSS variables drive everything tone- and position-dependent */
+  --slider-color: var(--accent-cyan);
+  --slider-glow: var(--glow-cyan-sm);
+  --slider-glow-lg: var(--glow-cyan);
+  --slider-shadow: rgba(199, 204, 212, 0.18);
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 0 4px;
+  position: relative;
+}
+
+/* ── Head: label + live value ──────────────────────────────────────────── */
+
+.aeris-slider__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 14px;
+}
+
+.aeris-slider__label {
+  color: var(--text-secondary);
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: color var(--transition-fast);
+}
+
+.aeris-slider:hover .aeris-slider__label {
+  color: var(--text-primary);
+}
+
+.aeris-slider[data-dragging] .aeris-slider__label {
+  color: var(--slider-color);
+}
+
+.aeris-slider__value {
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.aeris-slider[data-dragging] .aeris-slider__value,
+.aeris-slider:hover .aeris-slider__value {
+  color: var(--slider-color);
+}
+
+.aeris-slider[data-dragging] .aeris-slider__value {
+  /* Live value hides during drag — drag preview takes over */
+  opacity: 0;
+}
+
+/* ── Track wrap: visual track + native input on top ────────────────────── */
+
+.aeris-slider__track-wrap {
+  position: relative;
+  height: 22px;
+  display: flex;
+  align-items: center;
+}
+
+/* Visual track — sits at center, decorated by CSS */
+.aeris-slider__track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 2px;
+  overflow: hidden;
+  transition: height var(--transition-fast);
+  pointer-events: none;
+}
+
+.aeris-slider__track-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--slider-pct, 0%);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--slider-color) 65%, transparent) 0%,
+    var(--slider-color) 100%
+  );
+  box-shadow: 0 0 8px color-mix(in srgb, var(--slider-color) 50%, transparent);
+  transition: width var(--transition-base), box-shadow var(--transition-fast);
+}
+
+.aeris-slider:hover .aeris-slider__track,
+.aeris-slider[data-dragging] .aeris-slider__track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.aeris-slider[data-dragging] .aeris-slider__track-fill {
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--slider-color) 70%, transparent),
+    0 0 24px color-mix(in srgb, var(--slider-color) 30%, transparent);
+}
+
+/* Native input — full width, transparent, sits on top for interaction */
+.aeris-slider__input {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.aeris-slider__input:focus { outline: none; }
+
+/* WebKit track — invisible, just for thumb positioning */
+.aeris-slider__input::-webkit-slider-runnable-track {
+  height: 4px;
+  background: transparent;
+  border: none;
+}
+
+.aeris-slider__input::-moz-range-track {
+  height: 4px;
+  background: transparent;
+  border: none;
+}
+
+/* ── Thumb (hollow tone-ring) ───────────────────────────────────────────── */
+
+.aeris-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg-deep);
+  border: 2px solid var(--slider-color);
+  margin-top: -5px;
+  box-shadow:
+    0 0 0 0 var(--slider-shadow),
+    var(--slider-glow);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-base),
+    background var(--transition-fast);
+}
+
+.aeris-slider__input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg-deep);
+  border: 2px solid var(--slider-color);
+  box-shadow: var(--slider-glow);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-base),
+    background var(--transition-fast);
+}
+
+/* Hover / focus — soft halo ring */
+.aeris-slider__input:hover::-webkit-slider-thumb,
+.aeris-slider__input:focus-visible::-webkit-slider-thumb {
+  transform: scale(1.1);
+  box-shadow:
+    0 0 0 5px var(--slider-shadow),
+    var(--slider-glow-lg);
+}
+
+.aeris-slider__input:hover::-moz-range-thumb,
+.aeris-slider__input:focus-visible::-moz-range-thumb {
+  transform: scale(1.1);
+  box-shadow:
+    0 0 0 5px var(--slider-shadow),
+    var(--slider-glow-lg);
+}
+
+/* Active / drag — solid fill, larger halo */
+.aeris-slider__input:active::-webkit-slider-thumb,
+.aeris-slider[data-dragging] .aeris-slider__input::-webkit-slider-thumb {
+  transform: scale(1.2);
+  background: var(--slider-color);
+  box-shadow:
+    0 0 0 7px var(--slider-shadow),
+    var(--slider-glow-lg);
+}
+
+.aeris-slider__input:active::-moz-range-thumb,
+.aeris-slider[data-dragging] .aeris-slider__input::-moz-range-thumb {
+  transform: scale(1.2);
+  background: var(--slider-color);
+  box-shadow:
+    0 0 0 7px var(--slider-shadow),
+    var(--slider-glow-lg);
+}
+
+/* ── Drag preview — floating callout above the thumb ────────────────────── */
+
+.aeris-slider__drag-preview {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: var(--slider-pct, 0%);
+  transform: translateX(-50%) translateY(4px);
+  padding: 4px 9px;
+  background: var(--bg-deep);
+  border: 1px solid var(--slider-color);
+  color: var(--slider-color);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 2px;
+  box-shadow:
+    0 0 0 1px var(--bg-deep) inset,
+    var(--slider-glow-lg),
+    0 6px 14px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity var(--transition-fast), transform var(--transition-base);
+}
+
+.aeris-slider__drag-preview::after {
+  /* Pointer arrow at bottom — matches border colour */
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border: 4px solid transparent;
+  border-top-color: var(--slider-color);
+  filter: drop-shadow(0 1px 0 var(--slider-color));
+}
+
+.aeris-slider[data-dragging] .aeris-slider__drag-preview {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Range bounds (min / max under the track) ───────────────────────────── */
+
+.aeris-slider__range {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: 9px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  user-select: none;
+  pointer-events: none;
+  margin-top: -2px;
+}
+
+.aeris-slider__range-min,
+.aeris-slider__range-max {
+  transition: color var(--transition-fast);
+}
+
+.aeris-slider__range-tick {
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--border-subtle) 0,
+    var(--border-subtle) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+}
+
+.aeris-slider:hover .aeris-slider__range-min,
+.aeris-slider:hover .aeris-slider__range-max {
+  color: var(--text-tertiary);
+}
+
+/* ── Disabled ───────────────────────────────────────────────────────────── */
+
+.aeris-slider[data-disabled] {
+  opacity: 0.4;
+}
+
+.aeris-slider[data-disabled] .aeris-slider__input {
+  cursor: not-allowed;
+}
+
+/* ── Tone palette (cyan / green / amber / red / violet) ─────────────────── */
+
+.aeris-slider[data-tone='info'] {
+  --slider-color: var(--accent-cyan);
+  --slider-glow: var(--glow-cyan-sm);
+  --slider-glow-lg: var(--glow-cyan);
+  --slider-shadow: rgba(199, 204, 212, 0.18);
+}
+
+.aeris-slider[data-tone='nominal'] {
+  --slider-color: var(--accent-green);
+  --slider-glow: 0 0 transparent;
+  --slider-glow-lg: var(--glow-green);
+  --slider-shadow: rgba(174, 180, 191, 0.18);
+}
+
+.aeris-slider[data-tone='caution'] {
+  --slider-color: var(--accent-amber);
+  --slider-glow: 0 0 transparent;
+  --slider-glow-lg: var(--glow-amber);
+  --slider-shadow: rgba(216, 165, 83, 0.18);
+}
+
+.aeris-slider[data-tone='critical'] {
+  --slider-color: var(--accent-red);
+  --slider-glow: 0 0 transparent;
+  --slider-glow-lg: var(--glow-red);
+  --slider-shadow: rgba(220, 79, 93, 0.18);
+}
+
+.aeris-slider[data-tone='violet'] {
+  --slider-color: var(--accent-violet);
+  --slider-glow: 0 0 transparent;
+  --slider-glow-lg: var(--glow-violet);
+  --slider-shadow: rgba(141, 147, 161, 0.18);
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .aeris-slider__track,
+  .aeris-slider__track-fill,
+  .aeris-slider__drag-preview,
+  .aeris-slider__input::-webkit-slider-thumb,
+  .aeris-slider__input::-moz-range-thumb {
+    transition: none;
+  }
+}

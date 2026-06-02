@@ -1,0 +1,158 @@
+/* ============================================================================
+ * AERIS-10 — Design Tokens (Ghost Protocol — Refined Tactical)
+ * ----------------------------------------------------------------------------
+ * Section 4.1 of the master directive, expanded for the "Ghost Protocol"
+ * design pass. Every component references these — never hard-code hex codes,
+ * font stacks, or layout dimensions.
+ * ============================================================================ */
+
+:root {
+  /* ── Surfaces — one tonal ladder; depth from VALUE, not blur ─────────
+   * Four desaturated near-black planes. Chrome recedes so the PPI scope is
+   * the only luminous object. Opaque, honest matte — no frosted glass. */
+  --surface-0: #070708;   /* void / scope substrate — near-pure neutral black */
+  --surface-1: #0b0b0d;   /* side panels */
+  --surface-2: #101013;   /* top / status bars, overlays */
+  --surface-3: #18181d;   /* cards, inputs, elevated cells */
+
+  --bg-deep: var(--surface-0);
+  --bg-surface: var(--surface-1);
+  --bg-elevated: var(--surface-3);
+  --bg-overlay: var(--surface-2);           /* opaque — no glass */
+
+  --border-subtle: #1c1c21;
+  --border-active: #2a2a31;
+  --border-strong: #3a3a43;
+  --hairline: rgba(150, 152, 160, 0.09);     /* neutral graphite hairline */
+  --hairline-strong: rgba(150, 152, 160, 0.17);
+
+  /* ── Accents (primary) ────────────────────────────────────────────── */
+  /* Blackout monochrome: black is the identity. The focus/brand accent is a
+   * neutral platinum — NOT a hue — so the only chromatic signal in the whole
+   * console is THREAT (amber caution, red critical). Nominal/analysis read as
+   * quiet neutral grays. */
+  --accent-cyan: #c7ccd4;   /* platinum — focus / brand (formerly cyan) */
+  --accent-green: #aeb4bf;  /* neutral — nominal reads quiet, not green */
+  --accent-amber: #d8a553;  /* antique gold — caution (1 of 2 colours) */
+  --accent-red: #dc4f5d;    /* crimson — critical (the alarm colour) */
+  --accent-violet: #8d93a1; /* neutral — analysis */
+
+  /* Intent roles: use these when colour communicates operator meaning. */
+  --role-focus: var(--accent-cyan);
+  --role-nominal: var(--accent-green);
+  --role-caution: var(--accent-amber);
+  --role-critical: var(--accent-red);
+  --role-analysis: var(--accent-violet);
+  --role-simulated: var(--accent-amber);
+
+  /* ── Accents (soft variants for backgrounds, dim states) ─────────── */
+  --accent-cyan-soft: rgba(199, 204, 212, 0.10);
+  --accent-cyan-15: rgba(199, 204, 212, 0.13);
+  --accent-cyan-25: rgba(199, 204, 212, 0.22);
+  --accent-cyan-45: rgba(199, 204, 212, 0.38);
+  --accent-green-soft: rgba(174, 180, 191, 0.09);
+  --accent-amber-soft: rgba(216, 165, 83, 0.10);
+  --accent-red-soft: rgba(220, 79, 93, 0.10);
+  --accent-violet-soft: rgba(141, 147, 161, 0.09);
+
+  /* ── Text ────────────────────────────────────────────────────────── */
+  --text-primary: #e6e7ea;
+  --text-secondary: #8a8d94;
+  --text-tertiary: #5a5d65;
+  --text-dim: #3d3f47;
+
+  /* ── Typography ──────────────────────────────────────────────────── */
+  --font-display: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --font-ui: 'IBM Plex Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-label: 'Space Mono', 'JetBrains Mono', monospace;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace; /* canonical figures */
+  --font-brand: 'Chakra Petch', 'IBM Plex Sans', system-ui, sans-serif;  /* distinctive wordmark */
+
+  /* Line-height + tracking — hierarchy comes from these + weight, not size. */
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --tracking-label: 0.08em;
+  --tracking-caps: 0.14em;
+
+  /* Type scale — semantic. Use these instead of raw px. */
+  --text-display: 14px;     /* Big readouts (uptime, frame count) */
+  --text-data: 11px;        /* Tabular value rows */
+  --text-body: 12px;        /* UI prose */
+  --text-label: 9.5px;      /* Section labels, uppercase tracked */
+  --text-micro: 8.5px;      /* Sub-labels, badges */
+
+  /* ── Spacing ─────────────────────────────────────────────────────── */
+  --space-px: 1px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* ── Layout primitives ───────────────────────────────────────────── */
+  --layout-topbar-h: 52px;
+  --layout-statusbar-h: 28px;
+  --layout-leftpanel-w: 296px;
+  --layout-rightpanel-w: 340px;
+
+  /* ── Radius — one quiet, consistent value (intentional, not "mil-sharp") ── */
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 3px;
+  --radius-pill: 999px;
+
+  /* ── Glows — neutralised (instrument-grade dry rendering) ───────────────
+   * Severity and focus must read from TYPOGRAPHY + glyph COLOUR alone, never
+   * from a bloom halo (Aegis / Saab 9LV / AN-SPY mandate flat emissives —
+   * bloom is operator fatigue + the canonical "sci-fi/AI render" tell). The
+   * tokens stay defined as `none` so every existing call site (text-shadow /
+   * box-shadow: var(--glow-*)) compiles and flattens in one place. */
+  --glow-cyan-sm: 0 0 transparent;
+  --glow-cyan: 0 0 transparent;
+  --glow-cyan-lg: 0 0 transparent;
+  --glow-green: 0 0 transparent;
+  --glow-amber: 0 0 transparent;
+  --glow-red: 0 0 transparent;
+  --glow-violet: 0 0 transparent;
+
+  /* ── Shadows (depth without harshness) ─────────────────────────────── */
+  --shadow-panel:
+    0 1px 0 rgba(255, 255, 255, 0.025) inset,
+    0 8px 24px rgba(0, 0, 0, 0.55);
+  --shadow-overlay:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 18px 44px rgba(0, 0, 0, 0.72);
+
+  /* ── Motion ──────────────────────────────────────────────────────── */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 80ms var(--ease-out-quart);
+  --transition-base: 160ms var(--ease-out-quart);
+  --transition-slow: 320ms var(--ease-out-expo);
+
+  /* ── Semantic status mapping ─────────────────────────────────────── */
+  --status-nominal: var(--role-nominal);
+  --status-caution: var(--role-caution);
+  --status-warning: var(--role-caution);
+  --status-critical: var(--role-critical);
+  --status-info: var(--role-focus);
+  --status-violet: var(--role-analysis);
+  --status-dim: var(--text-dim);
+}
+
+/* Sr-only utility (a11y) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

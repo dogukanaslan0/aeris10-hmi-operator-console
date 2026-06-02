@@ -1,0 +1,1135 @@
+/* ============================================================================
+ * Telemetry Panel — shared styles for every telemetry sub-component.
+ * ============================================================================ */
+
+.tlm-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.tlm-panel[data-mode='engagement'] .tlm-fixed-alarm-container {
+  border-bottom-color: rgba(255, 77, 94, 0.45);
+}
+
+.tlm-panel[data-mode='diagnostic'] .tlm-fixed-alarm-container {
+  max-height: 285px;
+  border-bottom-color: rgba(143, 122, 255, 0.42);
+  overflow: hidden;
+}
+
+.tlm-panel[data-mode='diagnostic'] .tlm-scroll-container {
+  gap: var(--space-3);
+}
+
+.tlm-panel[data-mode='diagnostic'] .alarm-feed {
+  max-height: 170px;
+}
+
+.tlm-panel[data-mode='diagnostic'] .alarm-feed__item {
+  padding: 6px 8px;
+}
+
+.tlm-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Internal clean scrollbar for metrics */
+.tlm-scroll-container::-webkit-scrollbar {
+  width: 4px;
+}
+.tlm-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+.tlm-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 0px !important;
+}
+.tlm-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: var(--border-active);
+}
+
+.tlm-fixed-alarm-container {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-bottom: 2px solid var(--border-active);
+  background: var(--bg-overlay);
+  padding: var(--space-3) var(--space-3) calc(var(--space-3) + 2px) var(--space-3);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  z-index: 5;
+  transition: all var(--transition-base);
+}
+
+.tlm-fixed-alarm-container__body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Visual cue highlight animation when TopBar alarm badge is clicked */
+.tlm-fixed-alarm-container.tlm-fixed-alarm-container--highlight {
+  animation: alarm-container-alert-glow 1s ease;
+}
+
+@keyframes alarm-container-alert-glow {
+  0%, 100% {
+    border-bottom-color: var(--border-active);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  }
+  50% {
+    border-bottom-color: var(--accent-red);
+    box-shadow: 0 4px 32px rgba(255, 46, 85, 0.4), inset 0 0 12px rgba(255, 46, 85, 0.1);
+  }
+}
+
+.tlm-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tlm-section__title {
+  margin: 0;
+  padding: 2px 0 var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+  border-left: 2px solid var(--accent-cyan);
+  background: rgba(199, 204, 212, 0.03);
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.tlm-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tlm-section[data-dense='true'] .tlm-section__body {
+  gap: var(--space-1);
+}
+
+.tlm-empty {
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-align: center;
+  padding: var(--space-3) 0;
+  color: var(--text-dim);
+}
+
+/* Sensor-unavailable banner — shown when upstream radar protocol doesn't
+ * expose thermistor / PA / IMU / baro telemetry (i.e. real hardware in
+ * upstream's current firmware revision). */
+.tlm-sensor-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  /* Severity carried by the icon + heading text colour, not the chrome */
+}
+
+.tlm-sensor-banner__icon {
+  flex-shrink: 0;
+  color: var(--accent-amber);
+  margin-top: 1px;
+}
+
+.tlm-sensor-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+@keyframes tlm-banner-flicker {
+  0%   { box-shadow: 0 0 6px rgba(255, 159, 0, 0.06), inset 0 0 12px rgba(255, 159, 0, 0.02); }
+  50%  { box-shadow: 0 0 18px rgba(255, 159, 0, 0.25), inset 0 0 20px rgba(255, 159, 0, 0.06); }
+  100% { box-shadow: 0 0 28px rgba(255, 159, 0, 0.35), inset 0 0 30px rgba(255, 159, 0, 0.08); }
+}
+
+.tlm-sensor-banner strong {
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  color: var(--accent-amber);
+  text-transform: uppercase;
+}
+
+.tlm-sensor-banner span {
+  font-size: 9.5px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+/* ── Thermistor panel (Segmented Pro LED Metres) ────────────────────────── */
+
+.thermistor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 10px;
+}
+
+.thermistor__row {
+  display: grid;
+  grid-template-columns: 32px 1fr 50px;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.thermistor__label {
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--text-secondary);
+}
+
+.thermistor__bar {
+  position: relative;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.thermistor__fill {
+  height: 100%;
+  transition: width var(--transition-slow);
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.25) 3px,
+    rgba(0, 0, 0, 0.25) 4px
+  );
+  background-size: 4px 100%;
+}
+
+.thermistor__row[data-tone='nominal']  .thermistor__fill {
+  background-color: var(--accent-green);
+  box-shadow: inset 0 0 4px rgba(0, 255, 170, 0.35);
+}
+.thermistor__row[data-tone='caution']  .thermistor__fill {
+  background-color: var(--accent-amber);
+  box-shadow: inset 0 0 4px rgba(255, 159, 0, 0.35);
+}
+.thermistor__row[data-tone='critical'] .thermistor__fill {
+  background-color: var(--accent-red);
+  /* Static red fill — no LED pulsing. Threshold-crossed bars stay solid,
+   * letting the threshold line (border) carry the urgency. */
+}
+
+.thermistor__value {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  letter-spacing: 0.06em;
+}
+
+.thermistor__row[data-tone='nominal']  .thermistor__value { color: var(--accent-green); }
+.thermistor__row[data-tone='caution']  .thermistor__value { color: var(--accent-amber); }
+.thermistor__row[data-tone='critical'] .thermistor__value { color: var(--accent-red); }
+
+.thermistor__row[data-alarm='true'] {
+  /* Alarm carried by the value text colour (already red) — no rail, no
+   * background tint. Uniform row chrome. */
+  background: transparent;
+}
+
+.thermistor__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-subtle);
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.thermistor__footer strong {
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.06em;
+}
+
+.thermistor__footer strong[data-active='true'] {
+  color: var(--accent-green);
+  text-shadow: var(--glow-green);
+}
+
+/* ── PA current grid (Sleek Apple Pro Cells) ────────────────────────────── */
+
+.pa-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+}
+
+.pa-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px var(--space-2);
+  border: 1px solid var(--border-subtle);
+  border-top: 1px solid transparent;
+  background: rgba(10, 13, 20, 0.45);
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--transition-base), background-color var(--transition-base),
+              transform var(--transition-fast), box-shadow var(--transition-base);
+}
+
+.pa-cell:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.02);
+  transform: scale(1.01);
+}
+
+.pa-cell[data-selected='true'] {
+  border-color: var(--accent-cyan) !important;
+  border-top-color: var(--accent-cyan) !important;
+  background: rgba(199, 204, 212, 0.06) !important;
+  /* Subtle scale only — no outer glow halo */
+  transform: scale(1.015);
+}
+
+/* Uniform cell chrome — all PA cells share the same border/background.
+ * Severity reads from the value text colour (mA), the small status dot,
+ * and the sparkline alert pulse only. No coloured top rail, no gradient
+ * fade, no border tint. */
+.pa-cell[data-tone='nominal'],
+.pa-cell[data-tone='caution'],
+.pa-cell[data-tone='critical'] {
+  border-top: 1px solid var(--border-subtle);
+  background-image: none;
+}
+
+/* Alarm state on a PA cell — uniform chrome, no coloured border, no pulse.
+ * Severity reads only through:
+ *   1. The mA value text colour (red)
+ *   2. The status indicator dot (full-opacity red)
+ *   3. The sparkline's alert pulse (already implemented in Sparkline.css)
+ * That's three independent typographic / iconographic cues — more than
+ * enough without bracketing the whole card in a red frame. */
+.pa-cell[data-alarm='true'] {
+  border-color: var(--border-subtle) !important;
+  background-color: rgba(10, 13, 20, 0.45) !important;
+}
+
+.pa-cell__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  line-height: 1;
+}
+
+.pa-cell__label {
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+}
+
+.pa-cell__value {
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.pa-cell__unit {
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-left: 1px;
+}
+
+.pa-cell__sub {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 8.5px;
+  line-height: 1;
+  margin-top: -1px;
+  margin-bottom: 2px;
+}
+
+.pa-cell__temp {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.pa-cell__temp[data-tone='nominal']  { color: var(--accent-green); opacity: 0.8; }
+.pa-cell__temp[data-tone='caution']  { color: var(--accent-amber); }
+.pa-cell__temp[data-tone='critical'] { color: var(--accent-red); font-weight: 700; text-shadow: var(--glow-red); }
+
+.pa-cell__indicator {
+  font-size: 6px;
+  line-height: 1;
+}
+
+/* Indicator dots — static colour, no blinking. Severity carries through
+ * tone + the cell's left border tint, not via attention-grabbing flicker. */
+.pa-cell__indicator[data-tone='nominal']  { color: var(--accent-green); opacity: 0.55; }
+.pa-cell__indicator[data-tone='caution']  { color: var(--accent-amber); opacity: 0.85; }
+.pa-cell__indicator[data-tone='critical'] { color: var(--accent-red); opacity: 1; }
+
+.pa-cell[data-tone='nominal']  .pa-cell__value { color: var(--accent-green); }
+.pa-cell[data-tone='caution']  .pa-cell__value { color: var(--accent-amber); }
+.pa-cell[data-tone='critical'] .pa-cell__value { color: var(--accent-red); }
+
+.pa-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-subtle);
+  font-family: var(--font-display);
+  font-size: 9px;
+  color: var(--text-secondary);
+}
+
+.pa-footer strong {
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+}
+
+.pa-footer strong[data-active='true'] {
+  color: var(--accent-green);
+  text-shadow: var(--glow-green);
+}
+
+/* ── AGC ─────────────────────────────────────────────────────────────────── */
+
+.agc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: 10px;
+}
+
+.agc__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.agc__label {
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  min-width: 50px;
+}
+
+.agc__bar {
+  flex: 1;
+  display: flex;
+  gap: 1px;
+}
+
+.agc__cell {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all var(--transition-fast);
+}
+
+.agc__cell[data-filled='true'] {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  /* Static — no glow animation. The cyan fill alone signals the gain bar
+   * level; pulsing the cells creates AI-template visual noise. */
+}
+
+/* AGC center marker — the 0-gain reference column */
+.agc__cell[data-center] {
+  position: relative;
+}
+
+.agc__cell[data-center]::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: 50%;
+  width: 1px;
+  background: rgba(232, 234, 240, 0.55);
+  transform: translateX(-50%);
+}
+
+/* AGC metric tone (saturation OK/DEGRADED/SATURATED) */
+.agc__metric[data-tone='nominal']  .agc__metric-value { color: var(--accent-green); }
+.agc__metric[data-tone='caution']  .agc__metric-value { color: var(--accent-amber); }
+.agc__metric[data-tone='critical'] .agc__metric-value {
+  color: var(--accent-red);
+}
+
+@keyframes agc-glow {
+  /* Retained for reference but no longer applied — instrument aesthetic */
+  0%, 100% { box-shadow: none; }
+}
+
+.agc__value {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-cyan);
+  letter-spacing: 0.05em;
+  min-width: 28px;
+  text-align: right;
+  text-shadow: var(--glow-cyan);
+}
+
+.agc__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.agc__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.agc__metric-label {
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.agc__metric-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ── Frame stats ─────────────────────────────────────────────────────────── */
+
+.frame-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--font-display);
+  font-size: 10.5px;
+}
+
+.frame-stats__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: 2px var(--space-1);
+  transition: background var(--transition-fast);
+}
+
+.frame-stats__row:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.frame-stats__row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.frame-stats__row-label {
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.frame-stats__row-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+.frame-stats__row[data-tone='nominal']  .frame-stats__row-value { color: var(--accent-green); }
+.frame-stats__row[data-tone='caution']  .frame-stats__row-value { color: var(--accent-amber); }
+.frame-stats__row[data-tone='critical'] .frame-stats__row-value { color: var(--accent-red); }
+
+/* ── Alarm feed ──────────────────────────────────────────────────────────── */
+
+.alarm-feed-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.alarm-feed__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 4px;
+}
+
+.alarm-feed__tabs {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.alarm-feed__tab {
+  background: none;
+  border: none;
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 2px 4px;
+  position: relative;
+  transition: all var(--transition-base);
+  text-transform: uppercase;
+}
+
+.alarm-feed__tab:hover {
+  color: var(--text-secondary);
+}
+
+.alarm-feed__tab[data-active='true'] {
+  color: var(--accent-cyan);
+  text-shadow: var(--glow-cyan);
+}
+
+.alarm-feed__tab[data-active='true']::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--accent-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.alarm-feed__tab-count {
+  font-size: 8px;
+  background: var(--accent-red);
+  color: #ffffff;
+  padding: 0 4px;
+  margin-left: 4px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  box-shadow: var(--glow-red);
+  border-radius: 0px !important;
+}
+
+.alarm-feed__ack-all-btn {
+  background: rgba(255, 46, 85, 0.08);
+  border: 1px solid rgba(255, 46, 85, 0.35);
+  color: var(--accent-red);
+  font-family: var(--font-label);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.alarm-feed__ack-all-btn:hover {
+  background: rgba(255, 46, 85, 0.18);
+  border-color: var(--accent-red);
+  box-shadow: 0 0 8px rgba(255, 46, 85, 0.3);
+}
+
+.alarm-feed__ack-all-btn:active {
+  transform: scale(0.96);
+}
+
+.alarm-feed__filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 2px;
+}
+
+.alarm-feed__filter-label {
+  font-family: var(--font-label);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+.alarm-feed__filter-btn {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: var(--font-label);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 1px 6px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.alarm-feed__filter-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+
+.alarm-feed__filter-btn[data-active='true'] {
+  color: var(--accent-cyan);
+  border-color: rgba(199, 204, 212, 0.45);
+  background: rgba(199, 204, 212, 0.05);
+}
+
+.alarm-feed__filter-btn[data-active='true'][data-tone='critical'] {
+  color: var(--accent-red);
+  border-color: rgba(255, 46, 85, 0.45);
+  background: rgba(255, 46, 85, 0.05);
+}
+
+.alarm-feed__filter-btn[data-active='true'][data-tone='caution'] {
+  color: var(--accent-amber);
+  border-color: rgba(255, 159, 0, 0.45);
+  background: rgba(255, 159, 0, 0.05);
+}
+
+.alarm-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 220px;
+  overflow-y: auto;
+  margin-top: 2px;
+}
+
+/* Internal scrollbars for alarm feed log */
+.alarm-feed::-webkit-scrollbar {
+  width: 4px;
+}
+.alarm-feed::-webkit-scrollbar-track {
+  background: transparent;
+}
+.alarm-feed::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 0px !important;
+}
+.alarm-feed::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-red);
+}
+
+.alarm-feed__empty {
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-align: center;
+  padding: var(--space-3) 0;
+  color: var(--text-dim);
+}
+
+.alarm-feed__item {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 4px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  background: rgba(10, 13, 20, 0.45);
+  font-family: var(--font-display);
+  font-size: 10px;
+  transition: all var(--transition-base);
+  background-image: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.0) 40%,
+    rgba(255, 255, 255, 0.0) 100%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0;
+}
+
+.alarm-feed__item:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.01);
+  background-image: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.04) 55%,
+    transparent 70%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: alarm-shimmer 1.5s ease forwards;
+}
+
+.alarm-feed__item[data-acked='true'] {
+  opacity: 0.4;
+}
+
+/* Severity-by-typography only — no left rails, no tags, no tints on the
+ * card chrome itself. The card stays uniform; the only thing that colours
+ * up is the type:
+ *
+ *   1. The category label ("TARGET_THREAT · ...") at the top
+ *   2. The severity glyph (⬣ / ◆ / ⓘ) inside that label
+ *   3. The first letter group of the body when carrying a hard value
+ *
+ * Card chrome is operator-grade: hairline border, default background.
+ * This is how real instrument terminals show alarms — they never bracket
+ * a card with a coloured bar; they show coloured *words* on quiet panels. */
+
+.alarm-feed__item[data-severity='warning'],
+.alarm-feed__item[data-severity='critical'],
+.alarm-feed__item[data-severity='info'] {
+  /* All severities share the same chrome — uniform card */
+  border-left: 1px solid var(--border-subtle);
+  background-color: rgba(10, 13, 20, 0.42);
+}
+
+/* No ::before tag, no animations, no tinted background variants */
+
+@keyframes alarm-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+.alarm-feed__item[data-severity='info']     { border-left: 3px solid var(--accent-cyan); }
+
+.alarm-feed__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.alarm-feed__cat {
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.alarm-feed__item[data-severity='warning']  .alarm-feed__cat { color: var(--accent-amber); }
+.alarm-feed__item[data-severity='critical'] .alarm-feed__cat { color: var(--accent-red); }
+.alarm-feed__item[data-severity='info']     .alarm-feed__cat { color: var(--accent-cyan); }
+
+.alarm-feed__time {
+  font-size: 9px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.alarm-feed__msg {
+  color: var(--text-primary);
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.alarm-feed__incident {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: 2px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.045);
+}
+
+.alarm-feed__incident-row,
+.alarm-feed__incident-action {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.alarm-feed__incident-action {
+  grid-column: 1 / -1;
+  padding: 5px 7px;
+  border: 1px solid rgba(199, 204, 212, 0.14);
+  background: rgba(199, 204, 212, 0.045);
+}
+
+.alarm-feed__item[data-severity='critical'] .alarm-feed__incident-action {
+  border-color: rgba(255, 77, 94, 0.24);
+  background: rgba(255, 77, 94, 0.055);
+}
+
+.alarm-feed__incident span {
+  color: var(--text-dim);
+  font-family: var(--font-label);
+  font-size: 7.5px;
+  letter-spacing: 0.12em;
+}
+
+.alarm-feed__incident strong {
+  color: var(--text-primary);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.alarm-feed__ack {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 6px 14px;          /* was 2px 8px — Fitts's Law: bigger ACK target */
+  min-height: 28px;
+  min-width: 56px;
+  font-family: var(--font-label);
+  font-size: 10px;            /* was 9px */
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--accent-cyan);
+  background: rgba(199, 204, 212, 0.10);
+  border: 1px solid var(--accent-cyan);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.alarm-feed__ack:hover {
+  background: rgba(199, 204, 212, 0.22);
+  box-shadow: 0 0 8px rgba(199, 204, 212, 0.3);
+  transform: translateY(-1px);
+}
+
+.alarm-feed__ack:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Critical-severity ACK button gets a red tint for unmistakable urgency */
+.alarm-feed__item[data-severity='critical'] .alarm-feed__ack {
+  color: var(--accent-red);
+  background: rgba(220, 79, 93, 0.12);
+  border-color: var(--accent-red);
+}
+
+.alarm-feed__item[data-severity='critical'] .alarm-feed__ack:hover {
+  background: rgba(220, 79, 93, 0.24);
+  box-shadow: 0 0 10px rgba(220, 79, 93, 0.45);
+}
+
+/* Sound toggle button — sits alongside ACK ALL */
+.alarm-feed__toolbar-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.alarm-feed__sound-btn {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border-radius: 2px;
+}
+
+.alarm-feed__sound-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-active);
+}
+
+.alarm-feed__sound-btn[data-active] {
+  color: var(--accent-cyan);
+  border-color: rgba(199, 204, 212, 0.45);
+  background: rgba(199, 204, 212, 0.06);
+  box-shadow: 0 0 6px rgba(199, 204, 212, 0.18);
+}
+
+.alarm-feed__acked-by {
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--accent-green);
+  margin-top: 2px;
+}
+
+/* ── PA quiescent current selection detail panel ─────────────────────────── */
+
+.pa-currents-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pa-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-3);
+  position: relative;
+  transition: all var(--transition-base);
+  animation: pa-detail-slide-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pa-detail-slide-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Uniform left edge — PA detail card severity reads from the value text
+ * and the small status pill at the top, not from a coloured left rail. */
+.pa-detail[data-tone='nominal'],
+.pa-detail[data-tone='caution'],
+.pa-detail[data-tone='critical'] {
+  border-left: 1px solid var(--border-subtle);
+}
+
+.pa-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pa-detail__title {
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+
+.pa-detail__badge {
+  font-family: var(--font-label);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 2px 6px;
+  border-radius: 0px !important;
+  text-transform: uppercase;
+}
+
+.pa-detail__badge[data-tone='nominal']  { background: rgba(0, 255, 170, 0.12); color: var(--accent-green); border: 1px solid rgba(0, 255, 170, 0.2); }
+.pa-detail__badge[data-tone='caution']  { background: rgba(255, 159, 0, 0.12); color: var(--accent-amber); border: 1px solid rgba(255, 159, 0, 0.2); }
+.pa-detail__badge[data-tone='critical'] { background: rgba(255, 46, 85, 0.12); color: var(--accent-red); border: 1px solid rgba(255, 46, 85, 0.2); }
+
+.pa-detail__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.pa-detail__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pa-detail__metric-label {
+  font-family: var(--font-label);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.pa-detail__metric-value {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.pa-detail__metric-value[data-tone='nominal']  { color: var(--accent-green); }
+.pa-detail__metric-value[data-tone='caution']  { color: var(--accent-amber); }
+.pa-detail__metric-value[data-tone='critical'] { color: var(--accent-red); text-shadow: var(--glow-red); }
+
+.pa-detail__divider {
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.pa-detail__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: 9.5px;
+}
+
+.pa-detail__stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pa-detail__stat-row span {
+  color: var(--text-dim);
+  font-family: var(--font-label);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pa-detail__stat-row strong {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.pa-detail__sparkline-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: 4px;
+}
+
+.pa-detail__sparkline-label {
+  font-family: var(--font-label);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.pa-detail__sparkline {
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

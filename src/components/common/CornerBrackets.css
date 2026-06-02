@@ -1,0 +1,66 @@
+/* ────────────────────────────────────────────────────────────────────────────
+ * CornerBrackets — pinned to all four corners of the nearest positioned
+ * ancestor. Drawn with two pseudo-element-free borders per corner.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.corner-brackets {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.corner-brackets > span {
+  position: absolute;
+  width: var(--cb-size, 12px);
+  height: var(--cb-size, 12px);
+  opacity: var(--cb-opacity, 0.55);
+  transition: color var(--transition-base), opacity var(--transition-base);
+}
+
+/* Reactive (bindToConnection) — static colour change, no glow, no breathing.
+ * The bracket colour itself is the cue. FAULT keeps brackets fully opaque
+ * red; that's already a hard visual change without a flicker on top. */
+.corner-brackets[data-reactive='true'][data-tone='red'] > span {
+  opacity: 1;
+}
+
+/* Top-left */
+.corner-brackets__tl {
+  top: var(--cb-inset, 6px);
+  left: var(--cb-inset, 6px);
+  border-top: var(--cb-thickness, 1px) solid currentColor;
+  border-left: var(--cb-thickness, 1px) solid currentColor;
+}
+
+/* Top-right */
+.corner-brackets__tr {
+  top: var(--cb-inset, 6px);
+  right: var(--cb-inset, 6px);
+  border-top: var(--cb-thickness, 1px) solid currentColor;
+  border-right: var(--cb-thickness, 1px) solid currentColor;
+}
+
+/* Bottom-left */
+.corner-brackets__bl {
+  bottom: var(--cb-inset, 6px);
+  left: var(--cb-inset, 6px);
+  border-bottom: var(--cb-thickness, 1px) solid currentColor;
+  border-left: var(--cb-thickness, 1px) solid currentColor;
+}
+
+/* Bottom-right */
+.corner-brackets__br {
+  bottom: var(--cb-inset, 6px);
+  right: var(--cb-inset, 6px);
+  border-bottom: var(--cb-thickness, 1px) solid currentColor;
+  border-right: var(--cb-thickness, 1px) solid currentColor;
+}
+
+/* Tone */
+.corner-brackets[data-tone='cyan']   { color: var(--accent-cyan); }
+.corner-brackets[data-tone='green']  { color: var(--accent-green); }
+.corner-brackets[data-tone='amber']  { color: var(--accent-amber); }
+.corner-brackets[data-tone='red']    { color: var(--accent-red); }
+.corner-brackets[data-tone='violet'] { color: var(--accent-violet); }
+.corner-brackets[data-tone='dim']    { color: var(--text-dim); }

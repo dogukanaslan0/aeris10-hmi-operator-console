@@ -1,0 +1,560 @@
+/* ============================================================================
+ * Command Panel — shared styles for every command sub-component.
+ * ============================================================================ */
+
+.cmd-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-3);
+}
+
+.cmd-panel[data-mode='diagnostic'] {
+  gap: var(--space-3);
+}
+
+.cmd-panel[data-mode='diagnostic'] .cmd-section {
+  opacity: 0.82;
+}
+
+/* Engagement-mode first section was previously highlighted with a 2 px red
+ * left rail — removed; mode comm now reads only from the MissionModeRail and
+ * the TopBar mode switcher, not from coloured panel chrome. */
+
+/* ── Section ─────────────────────────────────────────────────────────────── */
+
+.cmd-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  /* No left rail, no hover-tint border — section blocks read as
+   * uniform stacked panels, exactly like instrument consoles. */
+}
+
+.cmd-section__title {
+  margin: 0;
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  /* No left rail, no gradient backwash, no neon text-shadow */
+}
+
+.cmd-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cmd-section[data-dense='true'] .cmd-section__body {
+  gap: var(--space-1);
+}
+
+
+
+/* ── OCXO ────────────────────────────────────────────────────────────────── */
+
+.ocxo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid rgba(141, 147, 161, 0.4);
+  background: rgba(141, 147, 161, 0.05);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 12px rgba(141, 147, 161, 0.12);
+}
+
+.ocxo__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--accent-violet);
+  text-transform: uppercase;
+}
+
+.ocxo__title-glyph {
+  display: inline-block;
+  margin-right: 6px;
+  animation: aeris-spin 2.2s linear infinite;
+}
+
+.ocxo__progress {
+  position: relative;
+  height: 12px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.ocxo__bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
+  transition: width var(--transition-base);
+}
+
+.ocxo__percent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+  mix-blend-mode: difference;
+}
+
+.ocxo__remaining {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+.ocxo__remaining strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-violet);
+}
+
+.ocxo__note {
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+@keyframes aeris-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Toggle button ───────────────────────────────────────────────────────── */
+
+.aeris-toggle-group {
+  display: flex;
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1px;
+  border: 1px solid var(--border-subtle);
+  border-bottom: 1px solid rgba(199, 204, 212, 0.25);
+  position: relative;
+}
+
+.aeris-toggle {
+  flex: 1;
+  padding: 6px 12px;
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-transform: uppercase;
+}
+
+.aeris-toggle:hover {
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.0) 0%,
+      rgba(255, 255, 255, 0.07) 45%,
+      rgba(255, 255, 255, 0.0) 55%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+  /* Static hover background — no diagonal shimmer sweep */
+  color: var(--text-primary);
+}
+
+.aeris-toggle[data-active='true'] {
+  background: rgba(199, 204, 212, 0.10);
+  border-color: var(--accent-cyan);
+  color: #ffffff;
+  /* Active state reads from cyan border + bg tint only — no left rail */
+}
+
+.aeris-toggle:focus-visible {
+  outline: 1px solid var(--accent-cyan);
+}
+
+/* ── Beam control ────────────────────────────────────────────────────────── */
+
+.beam-control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.beam-control__mode-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.beam-control__mode-label {
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.beam-control__sector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-1);
+  padding-left: var(--space-2);
+  border-top: 1px dashed var(--border-subtle);
+  border-left: 1px solid var(--border-subtle);
+}
+
+/* ── Radar config ────────────────────────────────────────────────────────── */
+
+.radar-config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.radar-config__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.radar-config__row:last-child {
+  border-bottom: none;
+}
+
+.radar-config__row-label {
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.radar-config__row-controls {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* ── Target list ─────────────────────────────────────────────────────────── */
+
+.target-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-display);
+  font-size: 10px;
+}
+
+.target-list__empty {
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-align: center;
+  padding: var(--space-3) 0;
+  color: var(--text-dim);
+}
+
+.target-list__header {
+  display: grid;
+  grid-template-columns: 18px 40px 46px 30px 54px 32px 1fr;
+  gap: 2px;
+  padding: 4px var(--space-1);
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.target-list__header-cell {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  text-transform: inherit;
+}
+
+.target-list__header-cell:hover,
+.target-list__header-cell[data-active='true'] {
+  color: var(--accent-cyan);
+}
+
+.target-list__header-cell[data-active='true']::after {
+  content: ' ' attr(data-dir);
+  font-size: 9px;
+}
+
+.target-list__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.target-list__row {
+  display: grid;
+  grid-template-columns: 18px 40px 46px 30px 54px 32px 1fr;
+  gap: 2px;
+  padding: 6px var(--space-1);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: var(--text-primary);
+  font: inherit;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.target-list__row:hover {
+  background: rgba(255, 255, 255, 0.035);
+  border-color: var(--border-subtle);
+}
+
+.target-list__row[data-selected='true'] {
+  border-color: var(--accent-cyan);
+  background: rgba(199, 204, 212, 0.06);
+  /* No left rail, no glow box-shadow — selected reads from cyan border + bg */
+}
+
+.target-list__row > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Numeric columns (RANGE · AZ · VEL · SNR) right-align so digits and decimals
+ * stack in a true column; with tabular figures this reads as a real data table
+ * instead of ragged text. TGT id and THREAT (glyph + word) stay left. */
+.target-list__header > .target-list__header-cell:nth-child(n+3):nth-child(-n+6),
+.target-list__row > span:nth-child(n+3):nth-child(-n+6) {
+  text-align: right;
+}
+
+.target-list__threat {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.target-list__row[data-threat='nominal']  .target-list__threat { color: var(--accent-green); }
+.target-list__row[data-threat='caution']  .target-list__threat { color: var(--accent-amber); }
+.target-list__row[data-threat='warning']  .target-list__threat { color: var(--accent-amber); }
+.target-list__row[data-threat='critical'] .target-list__threat { color: var(--accent-red); }
+
+/* ── Beam 3D Vector Hemisphere ───────────────────────────────────────────── */
+
+.beam-3d-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background: rgba(0, 5, 10, 0.35);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 12px rgba(199, 204, 212, 0.04);
+}
+
+.beam-3d-dome {
+  position: relative;
+  width: 120px;
+  height: 60px; /* half height for hemisphere */
+  background: radial-gradient(circle at bottom, rgba(199, 204, 212, 0.02) 0%, rgba(199, 204, 212, 0.08) 100%);
+  border-top-left-radius: 60px;
+  border-top-right-radius: 60px;
+  border: 1px dashed rgba(199, 204, 212, 0.22);
+  border-bottom: 2px solid rgba(199, 204, 212, 0.45);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(199, 204, 212, 0.06);
+}
+
+/* Floor grid lines */
+.beam-3d-grid-floor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(199, 204, 212, 0.15) 10px, rgba(199, 204, 212, 0.15) 11px);
+}
+
+/* Latitude line (semi-circle grid) */
+.beam-3d-grid-latitude {
+  position: absolute;
+  bottom: 0;
+  width: 80px;
+  height: 40px;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  border: 1px dashed rgba(199, 204, 212, 0.12);
+  border-bottom: none;
+}
+
+/* Pointer Vector pointing from bottom-center */
+.beam-3d-vector {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  height: 52px;
+  background: transparent;
+  transform-origin: bottom center;
+  /* Rotate using our CSS variables! */
+  /* Azimuth maps to direct rotation (sweeps 360), Elevation to scale/stretching */
+  transform: translateX(-50%) rotate(var(--vector-angle)) scaleY(var(--vector-scale));
+  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.beam-3d-vector-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(199, 204, 212, 0.1) 0%, #c7ccd4 100%);
+  box-shadow: 0 0 8px rgba(199, 204, 212, 0.7);
+}
+
+.beam-3d-vector-dot {
+  position: absolute;
+  top: 0;
+  left: -2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffb800;
+  box-shadow: 0 0 6px #ffb800;
+}
+
+.beam-3d-readout {
+  display: flex;
+  gap: var(--space-4);
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  margin-top: var(--space-2);
+}
+
+.target-list__pin-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.target-list__pin-btn:hover {
+  color: var(--accent-amber);
+  transform: scale(1.2);
+}
+
+.target-list__pin-btn[data-pinned='true'] {
+  color: var(--accent-amber);
+}
+
+/* ── Quick-filter chips (above the column header) ────────────────────────── */
+
+.target-list__filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed var(--border-subtle);
+}
+
+.target-list__filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+}
+
+.target-list__filter-chip:hover {
+  color: var(--text-primary);
+  border-color: var(--border-active);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.target-list__filter-chip[data-active] {
+  color: var(--accent-cyan);
+  border-color: rgba(199, 204, 212, 0.45);
+  background: rgba(199, 204, 212, 0.10);
+}
+
+.target-list__filter-chip[data-active][data-tone='critical'] {
+  color: var(--accent-red);
+  border-color: rgba(220, 79, 93, 0.45);
+  background: rgba(220, 79, 93, 0.10);
+}
+
+.target-list__filter-chip[data-active][data-tone='caution'] {
+  color: var(--accent-amber);
+  border-color: rgba(216, 165, 83, 0.45);
+  background: rgba(216, 165, 83, 0.10);
+}
+
+.target-list__filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 14px;
+  height: 13px;
+  padding: 0 3px;
+  font-family: var(--font-display);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-tertiary);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 2px;
+}
+
+.target-list__filter-chip[data-active] .target-list__filter-count {
+  color: currentColor;
+  background: rgba(0, 0, 0, 0.55);
+}
+

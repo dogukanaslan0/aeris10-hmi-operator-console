@@ -1,0 +1,444 @@
+/* ────────────────────────────────────────────────────────────────────────────
+ * PPICanvas — Premium Cinematic Radar Display
+ *
+ *   - Wrapper centres a square canvas inside the (typically rectangular)
+ *     centre column. Sizing is driven by the resize observer in PPICanvas.tsx,
+ *     not pure CSS, because OffscreenCanvas needs its drawing buffer rebuilt
+ *     on every dimension change.
+ *
+ *   - The detail overlay anchors to the top-left of the wrapper so it never
+ *     occludes the radar centre, regardless of canvas size.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.ppi-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: var(--space-2);
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ── Corner labels (decorative metadata) ────────────────────────────────── */
+
+.ppi-label {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  pointer-events: none;
+  z-index: 3;
+  user-select: none;
+}
+
+.ppi-label svg { color: var(--accent-cyan); opacity: 0.7; }
+
+.ppi-label--tl { top: 18px; left: 24px; }
+.ppi-label--tr { top: 18px; right: 24px; }
+.ppi-label--bl { bottom: 48px; left: 24px; }  /* lifted above the MAP toggle */
+.ppi-label--br { bottom: 18px; right: 24px; color: var(--text-dim); }
+
+/* ── Geographic basemap layer (MapLibre) ────────────────────────────────── */
+
+.ppi-map-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s var(--ease-out-quart);
+  /* Full brightness — the map IS the world; only a touch of desaturation so
+   * the cyan radar overlay still pops against it. */
+  filter: saturate(0.92);
+}
+
+.ppi-map-layer[data-visible] {
+  opacity: 1;
+}
+
+/* Map mode → wrapper goes edge-to-edge (no padding) and the canvas fills it
+ * fully so the sweep scans the entire visible map, not a centred disc. */
+.ppi-wrapper[data-map] {
+  padding: 0;
+}
+
+/* MapLibre canvas inherits container size */
+.ppi-map-layer .maplibregl-map {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+/* ── Map toggle button (bottom-left) ────────────────────────────────────── */
+
+.ppi-map-toggle {
+  position: absolute;
+  bottom: 16px;
+  left: 24px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: var(--surface-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.ppi-map-toggle svg { color: currentColor; }
+
+.ppi-map-toggle:hover {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan-25);
+  background: rgba(199, 204, 212, 0.08);
+}
+
+.ppi-map-toggle[data-active] {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  background: rgba(199, 204, 212, 0.12);
+}
+
+.ppi-canvas {
+  display: block;
+  cursor: crosshair;
+  max-width: 100%;
+  max-height: 100%;
+  position: relative;
+  z-index: 1;
+  transition: filter var(--transition-fast);
+  /* Subtle ambient glow around the radar display */
+  filter: drop-shadow(0 0 40px rgba(199, 204, 212, 0.03));
+}
+
+.ppi-canvas[data-hovered='true'] {
+  cursor: pointer;
+  filter: drop-shadow(0 0 56px rgba(199, 204, 212, 0.08));
+}
+
+/* ── Selected target overlay (Glassmorphic HUD Card) ───────────────────── */
+
+.ppi-overlay {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  width: 294px;
+  padding: 12px var(--space-3);
+  background: rgba(8, 10, 16, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-left: 1px solid var(--border-subtle);
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  color: var(--text-primary);
+  backdrop-filter: blur(24px);
+  pointer-events: none;
+  box-shadow:
+    0 0 16px rgba(199, 204, 212, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  animation: ppi-overlay-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--transition-base);
+  z-index: 50;
+}
+
+.ppi-overlay[data-mode='watch'] {
+  width: 238px;
+}
+
+.ppi-overlay[data-mode='diagnostic'] {
+  opacity: 0.88;
+}
+
+@keyframes ppi-overlay-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Uniform overlay card chrome across all severities — no coloured rail,
+ * no tone-tinted glow, no pulsing. The severity badge in the header + the
+ * VELOCITY cell text colour carry the threat signal. */
+.ppi-overlay[data-tone='nominal'],
+.ppi-overlay[data-tone='caution'],
+.ppi-overlay[data-tone='warning'],
+.ppi-overlay[data-tone='critical'] {
+  border-color: var(--border-subtle);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes ppi-overlay-crit-pulse {
+  0% { box-shadow: 0 0 16px rgba(255, 46, 85, 0.1), 0 8px 32px rgba(0, 0, 0, 0.6); }
+  100% { box-shadow: 0 0 28px rgba(255, 46, 85, 0.25), 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 46, 85, 0.05); }
+}
+
+.ppi-overlay__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ppi-overlay__header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ppi-overlay__id {
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+}
+
+.ppi-overlay[data-tone='nominal'] .ppi-overlay__id { color: var(--accent-green); }
+.ppi-overlay[data-tone='caution'] .ppi-overlay__id { color: var(--accent-amber); }
+.ppi-overlay[data-tone='warning'] .ppi-overlay__id { color: var(--accent-amber); }
+.ppi-overlay[data-tone='critical'] .ppi-overlay__id { color: var(--accent-red); text-shadow: var(--glow-red); }
+
+.ppi-overlay__class {
+  font-family: var(--font-label);
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.ppi-overlay__badge {
+  font-family: var(--font-label);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 2px 6px;
+  border-radius: 0px !important;
+  text-transform: uppercase;
+}
+
+.ppi-overlay__badge[data-tone='nominal']  { background: rgba(0, 255, 170, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 255, 170, 0.2); }
+.ppi-overlay__badge[data-tone='caution']  { background: rgba(255, 159, 0, 0.1); color: var(--accent-amber); border: 1px solid rgba(255, 159, 0, 0.2); }
+.ppi-overlay__badge[data-tone='warning']  { background: rgba(255, 159, 0, 0.12); color: var(--accent-amber); border: 1px solid rgba(255, 159, 0, 0.2); }
+.ppi-overlay__badge[data-tone='critical'] { background: rgba(255, 46, 85, 0.12); color: var(--accent-red); border: 1px solid rgba(255, 46, 85, 0.25); animation: ppi-badge-blink 0.8s infinite alternate; }
+
+@keyframes ppi-badge-blink {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.ppi-overlay__grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 6px 12px;
+}
+
+.ppi-overlay__mission-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px 0 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.ppi-overlay__mission-row span {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 9px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ppi-overlay__mission-row strong {
+  color: var(--text-dim);
+  font-family: var(--font-label);
+  font-size: 7.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.ppi-overlay__mission-row span[data-tone='nominal'] {
+  color: var(--role-nominal);
+}
+
+.ppi-overlay__mission-row span[data-tone='caution'] {
+  color: var(--role-caution);
+}
+
+.ppi-overlay__mission-row span[data-tone='critical'] {
+  color: var(--role-critical);
+}
+
+.ppi-overlay__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ppi-overlay__cell-label {
+  font-family: var(--font-label);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.ppi-overlay__cell-value {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.ppi-overlay__dossier-extra {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.ppi-overlay[data-mode='watch'] .ppi-overlay__dossier-extra {
+  display: none;
+}
+
+.ppi-overlay__trend-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.ppi-overlay__trend-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ppi-overlay__trend-cell span {
+  color: var(--text-dim);
+  font-family: var(--font-label);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+}
+
+.ppi-overlay__trend-cell strong {
+  color: var(--text-primary);
+  font-size: 8.5px;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ppi-overlay__trend-cell[data-tone='critical'] strong {
+  color: var(--role-critical);
+}
+
+.ppi-overlay__trend-cell[data-tone='nominal'] strong {
+  color: var(--role-nominal);
+}
+
+/* Velocity trend sparkline — uniform cyan tone so the bars read as a
+ * *trend chart*, not a 14-cell red alert grid. Closing vs opening is
+ * already signalled by VELOCITY + RNG TREND + CLOSING cells above. */
+.ppi-overlay__sparkline {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 20px;
+  padding: 2px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.20);
+  position: relative;
+}
+
+.ppi-overlay__sparkline::before {
+  content: 'VEL · 14';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  font-family: var(--font-label);
+  font-size: 7px;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.ppi-overlay__sparkline span {
+  flex: 1;
+  min-width: 2px;
+  background: var(--accent-cyan);
+  opacity: 0.55;
+}
+
+/* No tone variation — single colour trend bars */
+
+/* Cell specific threat color indicators */
+.ppi-overlay__cell-value[data-tone='nominal'] {
+  color: var(--accent-green);
+}
+
+.ppi-overlay__cell-value[data-tone='critical'] {
+  color: var(--accent-red);
+  /* No text-shadow, no pulse — the colour change alone signals the breach */
+}
+
+@keyframes ppi-value-pulse {
+  0% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+/* ── Corner HUD decorations ──────────────────────────────────────────────── */
+
+.ppi-wrapper::before,
+.ppi-wrapper::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: rgba(199, 204, 212, 0.15);
+  border-style: solid;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.ppi-wrapper::before {
+  top: 8px;
+  left: 8px;
+  border-width: 1px 0 0 1px;
+}
+
+.ppi-wrapper::after {
+  bottom: 8px;
+  right: 8px;
+  border-width: 0 1px 1px 0;
+}

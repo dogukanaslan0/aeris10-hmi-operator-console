@@ -1,0 +1,193 @@
+/* ────────────────────────────────────────────────────────────────────────────
+ * ShortcutOverlay — modal with kbd cards
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.shortcut-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  background: rgba(5, 7, 10, 0.92);
+  animation: shortcut-overlay-fade 120ms var(--ease-out-quart);
+}
+
+@keyframes shortcut-overlay-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.shortcut-overlay__card {
+  width: min(540px, 100%);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius-md);
+  box-shadow:
+    0 1px 0 rgba(199, 204, 212, 0.18) inset,
+    0 24px 48px rgba(0, 0, 0, 0.5),
+    0 0 32px rgba(199, 204, 212, 0.15);
+  font-family: var(--font-display);
+  animation: shortcut-overlay-rise 160ms var(--ease-out-expo);
+  position: relative;
+}
+
+.shortcut-overlay__card::before,
+.shortcut-overlay__card::after {
+  /* Corner brackets — cyan, 14 px, 8 px inset */
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--accent-cyan);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.shortcut-overlay__card::before {
+  top: 8px; left: 8px;
+  border-right: none;
+  border-bottom: none;
+}
+.shortcut-overlay__card::after {
+  bottom: 8px; right: 8px;
+  border-left: none;
+  border-top: none;
+}
+
+@keyframes shortcut-overlay-rise {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Head ───────────────────────────────────────────────────────────────── */
+
+.shortcut-overlay__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.shortcut-overlay__head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shortcut-overlay__eyebrow {
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  color: var(--accent-cyan);
+}
+
+.shortcut-overlay__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+}
+
+.shortcut-overlay__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast),
+              background var(--transition-fast);
+}
+
+.shortcut-overlay__close:hover {
+  color: var(--accent-red);
+  border-color: rgba(220, 79, 93, 0.45);
+  background: rgba(220, 79, 93, 0.08);
+}
+
+/* ── Body ───────────────────────────────────────────────────────────────── */
+
+.shortcut-overlay__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.shortcut-overlay__group-title {
+  margin: 0 0 var(--space-2) 0;
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.shortcut-overlay__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shortcut-overlay__row {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 4px 0;
+}
+
+.shortcut-overlay__kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 3px 8px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--accent-cyan);
+  background: var(--accent-cyan-soft);
+  border: 1px solid var(--accent-cyan-25);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(199, 204, 212, 0.2);
+  line-height: 1;
+}
+
+.shortcut-overlay__desc {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+/* ── Foot ───────────────────────────────────────────────────────────────── */
+
+.shortcut-overlay__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--text-dim);
+}

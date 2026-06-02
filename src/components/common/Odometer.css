@@ -1,0 +1,66 @@
+.odometer {
+  display: inline-flex;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.odometer__digit-container {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  height: 1.2em; /* matches parent line-height */
+  width: 0.62em; /* fixed width prevents text jitter as digits shift */
+  text-align: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 1px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8), inset 0 -2px 4px rgba(0, 0, 0, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  margin: 0 0.5px;
+}
+
+/* 3D cylindrical shading overlay */
+.odometer__digit-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0) 25%,
+    rgba(0, 0, 0, 0) 75%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.odometer__digit-strip {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition: transform 0.45s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+}
+
+.odometer__digit-number {
+  display: block;
+  height: 1.2em;
+  line-height: 1.2em;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+.odometer__separator {
+  display: inline-block;
+  padding: 0 1px;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  opacity: 0.85;
+}
